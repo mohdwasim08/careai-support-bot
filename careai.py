@@ -1,17 +1,16 @@
 import os
 import streamlit as st
 from dotenv import load_dotenv
-from google import genai
-from google.genai import types
+from groq import Groq
 
 load_dotenv()
 
 def get_api_key():
     try:
-        return st.secrets["GEMINI_API_KEY"]
+        return st.secrets["GROQ_API_KEY"]
     except:
         pass
-    val = os.getenv("GEMINI_API_KEY")
+    val = os.getenv("GROQ_API_KEY")
     if val:
         return val
     
@@ -27,30 +26,42 @@ def load_system_prompt():
 
 # Send message and get reply
 def get_response(chat_history: list, user_message: str) -> str:
-    client = genai.Client(api_key=api_key)
+
+    client = Groq(api_key=api_key)
 
     try:
-        # Add new user message to history
-        contents = chat_history + [
-            types.Content(
-                role="user",
-                parts=[types.Part(text=user_message)]
-            )
+
+        messages = [
+            {
+                "role": "system",
+                "content": load_system_prompt()
+            }
         ]
 
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=contents,
-            config=types.GenerateContentConfig(
-                system_instruction=load_system_prompt()
-            )
+        # Add previous conversation
+        for msg in chat_history:
+            messages.append({
+                "role": msg.role,
+                "content": msg.parts[0].text
+            })
+
+        # Current user message
+        messages.append({
+            "role": "user",
+            "content": user_message
+        })
+
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=messages,
+            temperature=0.7,
+            max_tokens=1024,
         )
 
-        return response.text
+        return response.choices[0].message.content
 
     except Exception as e:
-        return f"I'm sorry, I ran into an issue. Please try again. (Error: {str(e)})"
-
+        return f"Error: {e}"
     finally:
         client.close()
 

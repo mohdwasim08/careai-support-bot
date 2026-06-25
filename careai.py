@@ -17,7 +17,7 @@ def get_api_key():
 
 api_key = get_api_key()
 if not api_key:
-    raise RuntimeError("GEMINI_API_KEY is missing. Add it to your .env file.")
+    raise RuntimeError("GROQ_API_KEY is missing. Add it to your .env file.")
 
 # Load system prompt from file
 def load_system_prompt():

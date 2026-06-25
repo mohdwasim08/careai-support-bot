@@ -1,4 +1,4 @@
-google-genai==2.8.0
+groq
 streamlit
 python-dotenv
 httpx

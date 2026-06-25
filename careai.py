@@ -68,10 +68,15 @@ def get_response(chat_history: list, user_message: str) -> str:
 
 # Helper — call this after every turn to update history
 def update_history(chat_history: list, user_message: str, bot_reply: str) -> list:
-    chat_history.append(
-        types.Content(role="user", parts=[types.Part(text=user_message)])
-    )
-    chat_history.append(
-        types.Content(role="model", parts=[types.Part(text=bot_reply)])
-    )
+
+    chat_history.append({
+        "role": "user",
+        "content": user_message
+    })
+
+    chat_history.append({
+        "role": "assistant",
+        "content": bot_reply
+    })
+
     return chat_history

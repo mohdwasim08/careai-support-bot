@@ -40,10 +40,10 @@ def get_response(chat_history: list, user_message: str) -> str:
 
         # Add previous conversation
         for msg in chat_history:
-            messages.append({
-                "role": msg.role,
-                "content": msg.parts[0].text
-            })
+              messages.append({
+        "role": msg["role"],
+        "content": msg["content"]
+    })
 
         # Current user message
         messages.append({
